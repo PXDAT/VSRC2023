@@ -2,8 +2,6 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <PS2X_lib.h>
-  
-
 #define PS2_DAT 12
 #define PS2_CMD 13
 #define PS2_SEL 15
@@ -16,13 +14,10 @@
 #define SERVO_FREQ_MAX 550
 #define SERVO_MIN_DEGREE 0
 #define SERVO_MAX_DEGREE 180
-
 #define ENA
 #define ENB 
-
 #define pressures false
 #define rumble false
-
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 PS2X ps2x;
 bool mode_drive = false;
