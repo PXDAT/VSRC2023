@@ -26,7 +26,7 @@ void setup()
 {
   pwm.begin();
   pwm.setOscillatorFrequency(27000000);
-  pwm.setPWMFreq(50);
+  pwm.setPWMFreq(60);
 
   pwm.setPWM(SERVO,0,0);
 
@@ -69,11 +69,11 @@ void servo_anticlockwise(uint16_t Servo1)
 }
 void servo_clockwise180(uint16_t Servo3)
 {
-  pwm.setPWM(Servo3, 204, 410);
+  pwm.setPWM(Servo3, 0, 512);
 }
 void servo_anticlockwise180(uint16_t Servo4)
 {
-  pwm.setPWM(Servo4, 180, 204);
+  pwm.setPWM(Servo4, 0, 205);
 }
 void stop_servo(uint8_t Servo2)
 {
@@ -128,7 +128,7 @@ void liftDC()
 }
 void reverse_liftDC()
 {
-  pwm.setPWM(8,0,3000);
+  pwm.setPWM(8,0,4000);
   pwm.setPWM(9,0,0);
 }
 void liftDC_stop()
@@ -139,7 +139,7 @@ void liftDC_stop()
 void collector()
 {
   pwm.setPWM(14,0,0);
-  pwm.setPWM(15,0,4000);
+  pwm.setPWM(15,0,3000);
 }
 void reverse_collector()
 {
@@ -161,209 +161,200 @@ void ps2Control()
 {
   ps2x.read_gamepad(false, false);
 // VINH'S DRIVE MODE
-  if(ps2x.ButtonPressed(PSB_SELECT))
+//   if(ps2x.Button(PSB_L1))
+//   {
+//     forwarddc(0,2048);
+//     forward2dc(0,2048);
+//   }
+//   else if(ps2x.Button(PSB_R2))
+//   {
+//     backdc(2048,0);
+//     back2dc(2048,0);
+//   }
+//   else if(ps2x.Button(PSB_L2))
+//   {
+//     left2dc(2048,0);
+//     leftdc(0,2048);
+//   } 
+//   else if(ps2x.Button(PSB_R1))
+//   {
+//     rightdc(2048,0);
+//     right2dc(0,2048);
+//   }
+//   else
+//   {
+//     forwarddc(0,0);
+//     forward2dc(0,0);
+//     backdc(0,0);
+//     back2dc(0,0);
+//   }  
+//   if(ps2x.Button(PSB_GREEN))
+//   {
+//     servo_clockwise(SERVO);
+//     servo_anticlockwise(SERVO2);
+//   }
+//   else if(ps2x.Button(PSB_CROSS))
+//   {
+//     servo_clockwise(SERVO2);
+//     servo_anticlockwise(SERVO);
+//   }
+//   else
+//   {
+//     stop_servo(SERVO);
+//     stop_servo(SERVO2);
+//   }
+// // control servo 180 clockwise and anticlockwise
+//   if(ps2x.Button(PSB_SQUARE))
+//   {
+//     servo_clockwise180(SERVO3);
+//   }
+//   else if(ps2x.Button(PSB_CIRCLE))
+//   {
+//     servo_anticlockwise180(SERVO3);
+//   }
+//   else
+//   {
+//     stop_servo(SERVO3);
+//   }
+// // liftdc
+//   if(ps2x.Analog(PSS_RY) == 0)
+//   {
+//     reverse_liftDC();
+//   }
+//   else if(ps2x.Analog(PSS_RY) == 255)
+//   {
+//     liftDC();
+//   }
+//   else if(ps2x.Analog(PSS_RX) == 127)
+//   {
+//     electric_magnetic_brake();
+//   }
+//   else{
+//     liftDC_stop();
+//   }
+// // collector controller
+//   if(ps2x.ButtonPressed(PSB_PAD_UP))
+//   {
+//     collector_mode = !collector_mode;
+//   }
+//   else if(collector_mode)
+//   {
+//     reverse_collector();
+//   }
+//   else if(ps2x.Button(PSB_PAD_DOWN))
+//   {
+//     collector();
+//   }
+//   else
+//   {
+//     reverse_collector_stop();
+//   }
+// Linh drive 
+  if(ps2x.Analog(PSS_LY) == 0)
   {
-    mode_vinh = !mode_vinh;
+    forwarddc(0,3000);
+    forward2dc(0,3000);
   }
-  if(mode_vinh)
+  else if(ps2x.Analog(PSS_LY) == 255)
   {
-    if(ps2x.Button(PSB_L1))
-    {
-      forwarddc(0,2048);
-      forward2dc(0,2048);
-    }
-    else if(ps2x.Button(PSB_R2))
-    {
-      backdc(2048,0);
-      back2dc(2048,0);
-    }
-    else if(ps2x.Button(PSB_L2))
-    {
-      left2dc(2048,0);
-      leftdc(0,2048);
-    } 
-    else if(ps2x.Button(PSB_R1))
-    {
-      rightdc(2048,0);
-      right2dc(0,2048);
-    }
-    else
-    {
-      forwarddc(0,0);
-      forward2dc(0,0);
-      backdc(0,0);
-      back2dc(0,0);
-    }  
-    if(ps2x.Button(PSB_PAD_UP))
-    {
-      servo_clockwise(SERVO);
-      servo_anticlockwise(SERVO2);
-    }
-    else if(ps2x.Button(PSB_PAD_DOWN))
-    {
-      servo_clockwise(SERVO2);
-      servo_anticlockwise(SERVO);
-    }
-    else
-    {
-      stop_servo(SERVO);
-      stop_servo(SERVO2);
-    }
-  // control servo 180 clockwise and anticlockwise
-    if(ps2x.Button(PSB_PAD_LEFT))
-    {
-      servo_clockwise180(SERVO3);
-    }
-    else if(ps2x.Button(PSB_PAD_RIGHT))
-    {
-      servo_anticlockwise180(SERVO3);
-    }
-    else
-    {
-      stop_servo(SERVO3);
-    }
-  // liftdc
-    if(ps2x.Analog(PSS_RY) == 0)
-    {
-      reverse_liftDC;
-    }
-    else if(ps2x.Analog(PSS_RY) == 255)
-    {
-      liftDC();
-    }
-    else{
-      liftDC_stop();
-    }
-  // collector controller
-    if(ps2x.ButtonPressed(PSB_SQUARE))
-    {
-      collector_mode = !collector_mode;
-    }
-    else if(collector_mode)
-    {
-      reverse_collector();
-    }
-    else if(ps2x.Button(PSB_CIRCLE))
-    {
-      collector();
-    }
-    else
-    {
-      reverse_collector_stop();
-    }
+    backdc(3000,0);
+    back2dc(3000,0);
   }
-// Linh drive mode
-  else if(ps2x.ButtonPressed(PSB_START))
+  else if(ps2x.Analog(PSS_LX) == 0)
   {
-    mode_linh = !mode_linh;
+    rightdc(0,3000);
+    right2dc(3000,0);
+  } 
+  else if(ps2x.Analog(PSS_LX) == 255 )
+  {
+    left2dc(0,3000);
+    leftdc(3000,0);
   }
-  if(mode_linh)
+  else if(ps2x.Analog(PSS_RY) == 0)
   {
-    if(ps2x.Analog(PSS_LY) == 0)
-    {
-      forwarddc(0,3000);
-      forward2dc(0,3000);
-    }
-    else if(ps2x.Analog(PSS_LY) == 255)
-    {
-      backdc(3000,0);
-      back2dc(3000,0);
-    }
-    else if(ps2x.Analog(PSS_LX) == 0)
-    {
-      left2dc(0,3000);
-      leftdc(3000,0);
-    } 
-    else if(ps2x.Analog(PSS_LX) == 255 )
-    {
-      rightdc(0,3000);
-      right2dc(3000,0);
-    }
-    else if(ps2x.Analog(PSS_RY) == 0)
-    {
-      forwarddc(0,1000);
-      forward2dc(0,1000);
-    }
-    else if(ps2x.Analog(PSS_RY) == 255)
-    {
-      backdc(1000,0);
-      back2dc(1000,0);
-    }
-    else if(ps2x.Analog(PSS_RX) == 0)
-    {
-      left2dc(0,1000);
-      leftdc(1000,0);
-    } 
-    else if(ps2x.Analog(PSS_RX) == 255 )
-    {
-      rightdc(0,1000);
-      right2dc(1000,0);
-    }
-    else
-    {
-      forwarddc(0,0);
-      forward2dc(0,0);
-      backdc(0,0);
-      back2dc(0,0);
-    }
+    forwarddc(0,1000);
+    forward2dc(0,1000);
+  }
+  else if(ps2x.Analog(PSS_RY) == 255)
+  {
+    backdc(1000,0);
+    back2dc(1000,0);
+  }
+  else if(ps2x.Analog(PSS_RX) == 0)
+  {
+    rightdc(0,1000);
+    right2dc(1000,0);
+  } 
+  else if(ps2x.Analog(PSS_RX) == 255 )
+  {
+    left2dc(0,1000);
+    leftdc(1000,0);
+  }
+  else
+  {
+    forwarddc(0,0);
+    forward2dc(0,0);
+    backdc(0,0);
+    back2dc(0,0);
+  }
 // servo 360 control
-    if(ps2x.Button(PSB_PAD_UP))
-    {
-      servo_clockwise(SERVO);
-      servo_anticlockwise(SERVO2);
-    }
-    else if(ps2x.Button(PSB_PAD_DOWN))
-    {
-      servo_clockwise(SERVO2);
-      servo_anticlockwise(SERVO);
-    }
-    else
-    {
-      stop_servo(SERVO);
-      stop_servo(SERVO2);
-    }
-  // control servo 180 clockwise and anticlockwise
-    if(ps2x.Button(PSB_PAD_LEFT))
-    {
-      servo_clockwise180(SERVO3);
-    }
-    else if(ps2x.Button(PSB_PAD_RIGHT))
-    {
-      servo_anticlockwise180(SERVO3);
-    }
-    else
-    {
-      stop_servo(SERVO3);
-    }
-  // lift controller
-    if(ps2x.Button(PSB_R1))
-    {
-      liftDC();
-    }
-    else if(ps2x.Button(PSB_R2))
-    {
-      reverse_liftDC();
-    }
-    else{
-      liftDC_stop();
-    }
-  // collector controller
-    if(ps2x.ButtonPressed(PSB_L1))
-    {
-      collector_mode = !collector_mode;
-    }
-    else if(collector_mode)
-    {
-      collector();
-    }
-    else if(ps2x.Button(PSB_L2))
-    {
-      reverse_collector();
-    }
-    else
-    {
-      reverse_collector_stop();
-    }
+  if(ps2x.Button(PSB_GREEN))
+  {
+    servo_clockwise(SERVO);
+    servo_anticlockwise(SERVO2);
+  }
+  else if(ps2x.Button(PSB_CROSS))
+  {
+    servo_clockwise(SERVO2);
+    servo_anticlockwise(SERVO);
+  }
+  else
+  {
+    stop_servo(SERVO);
+    stop_servo(SERVO2);
+  }
+// control servo 180 clockwise and anticlockwise
+  if(ps2x.Button(PSB_SQUARE))
+  {
+    servo_clockwise180(SERVO3);
+  }
+  else if(ps2x.Button(PSB_CIRCLE))
+  {
+    servo_anticlockwise180(SERVO3);
+  }
+  else
+  {
+    stop_servo(SERVO3);
+  }
+// lift controller
+  if(ps2x.Button(PSB_L1))
+  {
+    liftDC();
+  }
+  else if(ps2x.Button(PSB_L2))
+  {
+    reverse_liftDC();
+  }
+  else
+  {
+    liftDC_stop();
+  }
+// collector controller
+  if(ps2x.ButtonPressed(PSB_R1))
+  {
+    collector_mode = !collector_mode;
+  }
+  else if(collector_mode)
+  {
+    collector();
+  }
+  else if(ps2x.Button(PSB_R2))
+  {
+    reverse_collector();
+  }
+  else
+  {
+    reverse_collector_stop();
   }
   delay(50);
 }
