@@ -2,7 +2,7 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
-#define MIN_PWM 0
+#define MIN_PWM -4095
 #define MAX_PWM 4095
 
 // PWM channels of pca9685 0-16
