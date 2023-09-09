@@ -7,10 +7,6 @@
 #define PS2_CMD 13
 #define PS2_SEL 15
 #define PS2_CLK 14
-#define SERVO_FREQ_MIN 200
-#define SERVO_FREQ_MAX 550
-#define SERVO_MIN_DEGREE 0
-#define SERVO_MAX_DEGREE 180
 #define ENA
 #define ENB 
 #define pressures false
@@ -127,13 +123,13 @@ void ps2Control()
   int joyright = ps2x.Analog(PSS_RY);
   joyright = map(joyright,0, 255, 4095, -4095);
   joyleft = map(joyleft, 0, 255, 4095, -4095);
-  if(joyleft > 0)
+  if(joyleft > 17)
   {
     leftdc(0, 0+joyleft);
     Serial.print("joyleft: ");
     Serial.println(joyleft);
   }
-  else if(joyleft < 0)
+  else if(joyleft < 17)
   {
     leftdc(0-joyleft, 0);
     Serial.print("joyleft: ");
@@ -143,13 +139,13 @@ void ps2Control()
   {
     leftdc(0,0);
   }
-  if(joyright > 0)
+  if(joyright > 17)
   {
     rightdc(0, 0+joyright);
     Serial.print("joyright: ");
     Serial.println(joyright);
   }
-  else if(joyright < 0)
+  else if(joyright < 17)
   {
     rightdc(0-joyright, 0);
     Serial.print("joyright: ");
