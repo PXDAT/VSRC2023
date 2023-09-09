@@ -2,14 +2,11 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <PS2X_lib.h>
+#include <cstdlib>
 #define PS2_DAT 12
 #define PS2_CMD 13
 #define PS2_SEL 15
 #define PS2_CLK 14
-#define SERVO 2
-#define SERVO2 3
-#define SERVO3 4
-#define SERVO4 5
 #define SERVO_FREQ_MIN 200
 #define SERVO_FREQ_MAX 550
 #define SERVO_MIN_DEGREE 0
@@ -20,16 +17,12 @@
 #define rumble false
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 PS2X ps2x;
-bool mode_drive = false, collector_mode = false, servo1 = false, servo2 = false, mode_linh = false, mode_vinh = false;
-int servo3 = 0, servo4 = 0, shooter_mode = 0;
+bool shooter_value = false, servo_intake = false;
 void setup() 
 {
   pwm.begin();
   pwm.setOscillatorFrequency(27000000);
   pwm.setPWMFreq(60);
-
-  pwm.setPWM(SERVO,0,0);
-
   Wire.setClock(400000);
   Serial.begin(115200);
   Serial.print("Ket noi voi tay cam PS2)");
@@ -82,26 +75,26 @@ void stop_servo(uint8_t Servo2)
 // motor setup
 void rightdc(uint16_t right, uint16_t right2)
 {
-  pwm.setPWM(10,0,right);
-  pwm.setPWM(11,0,right2);
+  pwm.setPWM(12, 0, right);
+  pwm.setPWM(13, 0, right2);
+}
+void middle(uint16_t middle1, uint16_t middle2)
+{
+  pwm.setPWM(14, 0, middle1);
+  pwm.setPWM(15, 0, middle2);
 }
 void leftdc(uint16_t left0, uint16_t left1)
 {
-  pwm.setPWM(12,0,left0);
-  pwm.setPWM(13,0,left1);
+  pwm.setPWM(10,0,left0);
+  pwm.setPWM(11,0,left1);
 }
 // shooter and collector setup
-void liftDC()
+void shooter()
 {
   pwm.setPWM(8,0,0);
-  pwm.setPWM(9,0,3000);
+  pwm.setPWM(9,0,4000);
 }
-void reverse_liftDC()
-{
-  pwm.setPWM(8,0,4000);
-  pwm.setPWM(9,0,0);
-}
-void liftDC_stop()
+void shooter_stop()
 {
   pwm.setPWM(8,0,0);
   pwm.setPWM(9,0,0);
@@ -132,35 +125,79 @@ void ps2Control()
   ps2x.read_gamepad(false, false);
   int joyleft = ps2x.Analog(PSS_LY);
   int joyright = ps2x.Analog(PSS_RY);
-  joyright = map(joyright,0, 255, -4095, 4095);
-  joyleft = map(joyleft, 0, 255, -4095, 4095);
-  if(joyleft > -17)
+  joyright = map(joyright,0, 255, 4095, -4095);
+  joyleft = map(joyleft, 0, 255, 4095, -4095);
+  if(joyleft > 0)
   {
-    leftdc(0,0+joyleft);
+    leftdc(0, 0+joyleft);
+    Serial.print("joyleft: ");
     Serial.println(joyleft);
   }
-  else if(joyleft < -17)
+  else if(joyleft < 0)
   {
-    leftdc(0-joyleft,0);
+    leftdc(0-joyleft, 0);
+    Serial.print("joyleft: ");
     Serial.println(joyleft);
   }
   else
   {
     leftdc(0,0);
   }
-  if(joyright > -17)
+  if(joyright > 0)
   {
-    rightdc(0,0+joyright);
+    rightdc(0, 0+joyright);
+    Serial.print("joyright: ");
     Serial.println(joyright);
   }
-  else if(joyright < -17)
+  else if(joyright < 0)
   {
     rightdc(0-joyright, 0);
+    Serial.print("joyright: ");
     Serial.println(joyright);
   }
   else 
   {
     rightdc(0,0);
+  }
+  if(joyright < 0 && joyleft > 0)
+  {
+    middle(0, 0+(abs(joyright)+joyleft) / 2);
+    Serial.print("joymiddle: ");
+    Serial.println(0+(abs(joyright)+joyleft) / 2);
+  }
+  else if(joyright > 0 && joyleft < 0)
+  {    
+    middle(0+(joyright + abs(joyleft))/2, 0);
+    Serial.print("joymiddle: "); 
+    Serial.println(0+(joyright + abs(joyleft))/2);
+  }
+  else
+  {
+    middle(0,0);
+  }
+  if(ps2x.ButtonPressed(PSB_L1))
+  {
+    shooter_value = !shooter_value;
+  }
+  if(shooter_value)
+  {
+    shooter();
+  }
+  else
+  {
+    shooter_stop();
+  } 
+  if(ps2x.ButtonPressed(PSB_TRIANGLE))
+  {
+    servo_intake = !servo_intake;
+  }
+  if(servo_intake)
+  {
+    servo_clockwise(2);
+  }
+  else
+  {
+    stop_servo(2);
   }
   delay(50);
 }
