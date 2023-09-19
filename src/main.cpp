@@ -95,34 +95,19 @@ void shooter_stop()
   pwm.setPWM(8,0,0);
   pwm.setPWM(9,0,0);
 }
-void collector()
-{
-  pwm.setPWM(14,0,0);
-  pwm.setPWM(15,0,3000);
-}
-void reverse_collector()
-{
-  pwm.setPWM(14,0,4000);
-  pwm.setPWM(15,0,0);
-}
-void reverse_collector_stop()
-{
-  pwm.setPWM(14,0,0);
-  pwm.setPWM(15,0,0);
-}
-void collector_stop()
-{
-  pwm.setPWM(14,0,0);
-  pwm.setPWM(15,0,0);
-}
 // control setup
 void ps2Control() 
 {
   ps2x.read_gamepad(false, false);
   int joyleft = ps2x.Analog(PSS_LY);
   int joyright = ps2x.Analog(PSS_RY);
+  int njoyl = ps2x.Analog(PSS_LX);
+  int njoyr = ps2x.Analog(PSS_RX);
+  njoyr = map(njoyr,0, 255, 4095, -4095);
+  njoyl = map(njoyl,0, 255, 4095, -4095);
   joyright = map(joyright,0, 255, 4095, -4095);
   joyleft = map(joyleft, 0, 255, 4095, -4095);
+  
   if(joyleft > 17)
   {
     leftdc(0, 0+joyleft);
@@ -131,7 +116,7 @@ void ps2Control()
   }
   else if(joyleft < 17)
   {
-    leftdc(0-joyleft, 0);
+    leftdc(0 + abs(joyleft), 0);
     Serial.print("joyleft: ");
     Serial.println(joyleft);
   }
@@ -147,7 +132,7 @@ void ps2Control()
   }
   else if(joyright < 17)
   {
-    rightdc(0-joyright, 0);
+    rightdc(0 + abs(joyright), 0);
     Serial.print("joyright: ");
     Serial.println(joyright);
   }
@@ -155,17 +140,13 @@ void ps2Control()
   {
     rightdc(0,0);
   }
-  if(joyright < 0 && joyleft > 0)
+  if(njoyl < 17 && njoyr < 17)
   {
-    middle(0, 0+(abs(joyright)+joyleft) / 2);
-    Serial.print("joymiddle: ");
-    Serial.println(0+(abs(joyright)+joyleft) / 2);
+    middle(0, 0 + abs(njoyl+njoyr) /2;
   }
-  else if(joyright > 0 && joyleft < 0)
+  else if(joyright > 17 && joyleft > 17)
   {    
-    middle(0+(joyright + abs(joyleft))/2, 0);
-    Serial.print("joymiddle: "); 
-    Serial.println(0+(joyright + abs(joyleft))/2);
+    middle(0 + (njoyr + njoyl) / 2, 0);
   }
   else
   {
@@ -183,18 +164,6 @@ void ps2Control()
   {
     shooter_stop();
   } 
-  if(ps2x.ButtonPressed(PSB_TRIANGLE))
-  {
-    servo_intake = !servo_intake;
-  }
-  if(servo_intake)
-  {
-    servo_clockwise(2);
-  }
-  else
-  {
-    stop_servo(2);
-  }
   delay(50);
 }
 void loop() {ps2Control();}
