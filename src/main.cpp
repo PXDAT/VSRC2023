@@ -144,7 +144,7 @@ void ps2Control()
   {
     middle(0, 0 + abs(njoyl+njoyr) /2;
   }
-  else if(joyright > 17 && joyleft > 17)
+  else if(njoyl > 17 &&  njoyr > 17)
   {    
     middle(0 + (njoyr + njoyl) / 2, 0);
   }
