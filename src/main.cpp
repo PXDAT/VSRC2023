@@ -138,18 +138,8 @@ void ps2Control()
   } 
   if(ps2x.ButtonPressed(PSB_R1))
   {
-    servo_value++;
-  }
-  switch(servo_value % 3)
-  {
-    case 0:
-      stop_servo;
-    case 1:
-      servo_clockwise(2);
-      servo_anticlockwise(3);
-    case 2:
-      servo_clockwise(3);
-      servo_anticlockwise(2);
+    servo_clockwise(2);
+    servo_anticlockwise(3);
   }
   delay(50);
 }
