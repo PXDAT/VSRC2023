@@ -51,11 +51,11 @@ void setup()
 // servo setup
 void servo_clockwise(uint16_t Servo)
 {
-  pwm.setPWM(Servo, 0, 180);
+  pwm.setPWM(Servo, 0, 100);
 }
 void servo_anticlockwise(uint16_t Servo1)
 {
-  pwm.setPWM(Servo1, 90, 580);
+  pwm.setPWM(Servo1, 90, 600);
 }
 void stop_servo(uint8_t Servo2)
 {
